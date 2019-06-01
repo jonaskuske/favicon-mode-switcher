@@ -5,24 +5,22 @@
  * Released under the MIT License.
  */
 
-/** @typedef {import('favicon-mode-switcher').ColorScheme} ColorScheme */
-/** @typedef {import('favicon-mode-switcher').IconOption} IconOption */
-/** @typedef {import('favicon-mode-switcher').Icon} Icon */
-/** @typedef {import('favicon-mode-switcher').FaviconModeSwitcher} FaviconModeSwitcher */
+/** @typedef { import('index').ColorScheme } ColorScheme */
+/** @typedef { import('index').IconConfig } IconConfig */
+/** @typedef { import('index').default } FaviconModeSwitcher */
+/** @typedef { IconConfig & {element: HTMLLinkElement} } Icon */
 
-const warn = (/** @type { string } */ message) => {
+function warn(/** @type { string } */ message) {
   typeof console !== 'undefined' && console.warn(message)
 }
 
-/** @param { Icon[] } icons */
-const initIcons = icons => {
+function initIcons(/** @type {Icon[]} */ icons) {
   icons.forEach(icon => {
     icon.element.setAttribute('data-href', icon.element.href)
   })
 }
 
-/** @param { Icon[] } icons @param { ColorScheme } scheme */
-const updateIcons = (icons, scheme) => {
+function updateIcons(/** @type { Icon[] }*/ icons, /** @type { ColorScheme } */ scheme) {
   icons.forEach(icon => {
     const href = icon.href && (icon.href[scheme] || icon.element.getAttribute('data-href'))
     // If href is defined, set href, else toggle "dark" and "light" in href URI
@@ -30,30 +28,22 @@ const updateIcons = (icons, scheme) => {
   })
 }
 
-/** @param { Icon[] } icons */
-const resetIcons = icons => {
+function resetIcons(/** @type { Icon[] } */ icons) {
   icons.forEach(icon => {
     icon.element.href = icon.element.getAttribute('data-href') || ''
     icon.element.removeAttribute('data-href')
   })
 }
 
-/**
- * @param { ColorScheme } scheme
- * @param { (query: MediaQueryList | MediaQueryListEvent) => any } queryHandler
- */
-const addColorQuery = (scheme, queryHandler) => {
+/** @param { (query: MediaQueryList | MediaQueryListEvent) => any } queryHandler */
+function addColorQuery(/** @type { ColorScheme } */ scheme, queryHandler) {
   const query = window.matchMedia(`(prefers-color-scheme: ${scheme})`)
   query.addListener(queryHandler)
   queryHandler(query)
   return () => query.removeListener(queryHandler)
 }
 
-/**
- * Takes in icon configuration, sets up listeners for the active color scheme
- * and updates hrefs of the icons whenever the active scheme changes.
- * @type {FaviconModeSwitcher}
- */
+/** @type { FaviconModeSwitcher } */
 export default function faviconModeSwitcher(options) {
   const isBrowser = typeof window !== 'undefined'
   if (!isBrowser || !options || !window.matchMedia) return () => {}
@@ -74,5 +64,6 @@ export default function faviconModeSwitcher(options) {
   const removeDarkQ = addColorQuery('dark', query => query.matches && updateIcons(icons, 'dark'))
   const removeLightQ = addColorQuery('light', query => query.matches && updateIcons(icons, 'light'))
 
-  return () => (removeDarkQ(), removeLightQ(), resetIcons(icons))
+  const destroyFn = () => ((removeDarkQ(), removeLightQ(), resetIcons(icons)))
+  return destroyFn
 }

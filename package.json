@@ -1,6 +1,6 @@
 {
   "name": "favicon-mode-switcher",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "🕯 Make your favicon adapt to dark and light mode",
   "main": "dist/index.js",
   "unpkg": "dist/index.umd.min.js",
@@ -28,7 +28,7 @@
     "minify:cjs": "npx terser dist/index.js -m -o dist/index.min.js --comments",
     "minify:esm": "npx terser dist/index.mjs -m -o dist/index.min.mjs --comments --module",
     "version": "npx replace '__VERSION__' $npm_package_version dist/*",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm t && npm run build"
   },
   "repository": {
     "type": "git",
