@@ -1,0 +1,57 @@
+{
+  "name": "favicon-mode-switcher",
+  "version": "0.1.0",
+  "description": "🕯 Make your favicon adapt to dark and light mode",
+  "main": "dist/index.js",
+  "unpkg": "dist/index.min.js",
+  "module": "dist/index.mjs",
+  "files": [
+    "dist/*",
+    "index.js",
+    "!dist/.gitkeep"
+  ],
+  "browserslist": [
+    "last 2 versions",
+    "ie > 7"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified yet\" && exit 0",
+    "build": "npm run babel && npm run minify && npm run version",
+    "babel": "npm run babel:cjs && npm run babel:esm",
+    "babel:cjs": "MODULE=UMD npx babel index.js -o dist/index.js",
+    "babel:esm": "MODULE=ESM npx babel index.js -o dist/index.mjs",
+    "minify": "npm run minify:cjs && npm run minify:esm",
+    "minify:cjs": "npx terser dist/index.js -m -o dist/index.min.js --comments",
+    "minify:esm": "npx terser dist/index.mjs -m -o dist/index.min.mjs --comments --module",
+    "version": "npx replace '__VERSION__' $npm_package_version dist/*",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonaskuske/favicon-mode-switcher.git"
+  },
+  "keywords": [
+    "favicon",
+    "icon",
+    "dark mode",
+    "light mode",
+    "color scheme"
+  ],
+  "author": "Jonas Kuske",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonaskuske/favicon-mode-switcher/issues"
+  },
+  "homepage": "https://github.com/jonaskuske/favicon-mode-switcher/#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "copyfiles": "^2.1.0",
+    "replace": "^1.1.0",
+    "terser": "^4.0.0"
+  },
+  "eslintIgnore": [
+    "dist/"
+  ]
+}
