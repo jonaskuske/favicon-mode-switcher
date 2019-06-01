@@ -55,10 +55,10 @@ const addColorQuery = (scheme, queryHandler) => {
  * @type {FaviconModeSwitcher}
  */
 export default function faviconModeSwitcher(options) {
-  options = Array.isArray(options) ? options : [options]
-
   const isBrowser = typeof window !== 'undefined'
   if (!isBrowser || !options || !window.matchMedia) return () => {}
+
+  options = Array.isArray(options) ? options : [options]
 
   const icons = options.reduce(
     (arr, { selector, href }) => {

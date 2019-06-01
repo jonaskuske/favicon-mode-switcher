@@ -1,8 +1,14 @@
-const isModule = process.env.MODULE === 'ESM'
+const moduleType = process.env.NODE_ENV === 'test' ? 'commonjs' : process.env.MODULE
 
 module.exports = {
   presets: [
-    ['@babel/preset-env', { targets: { esmodules: isModule }, modules: isModule ? false : 'umd' }],
+    [
+      '@babel/preset-env',
+      {
+        targets: { esmodules: moduleType === 'esm' },
+        modules: moduleType === 'esm' ? false : moduleType,
+      },
+    ],
   ],
-  plugins: ['babel-plugin-add-module-exports'],
+  plugins: moduleType === 'commonjs' ? ['add-module-exports'] : [],
 }
