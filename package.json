@@ -1,6 +1,6 @@
 {
   "name": "favicon-mode-switcher",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "🕯 Make your favicon adapt to dark and light mode",
   "main": "dist/index.js",
   "unpkg": "dist/index.min.js",
@@ -49,10 +49,41 @@
     "@babel/preset-env": "^7.4.5",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "lint-staged": "^8.1.7",
+    "prettier": "^1.17.1",
     "replace": "^1.1.0",
-    "terser": "^4.0.0"
+    "terser": "^4.0.0",
+    "yorkie": "^2.0.0"
   },
   "eslintIgnore": [
     "dist/"
-  ]
+  ],
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 100,
+    "trailingComma": "all"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2018
+    }
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md,html}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
 }
