@@ -62,15 +62,13 @@ faviconModeSwitcher({
 
 &nbsp;
 
-The module exports a single function as default export. If loaded through a CDN, this function will be exposed on `window.faviconModeSwitcher.default`.  
-It has the following type signature:
+The module exports a single function as **default export**. If loaded through a CDN, this function will be exposed on **`window.faviconModeSwitcher.default`**. It has the following type signature:
 
 ```ts
 function faviconModeSwitcher(IconConfig | IconConfig[]): DestroyFn
 ```
 
-It takes either an configuration object for a single icon to be updated, or an Array containing multiple config objects if you want to update many icons.  
-The configuration object looks like this:
+It takes either an configuration object for a single icon to be updated, or an Array containing multiple config objects if you want to update many icons. The configuration object looks like this:
 
 ```ts
 type IconConfig = {
@@ -87,8 +85,10 @@ The `selector` is a CSS selector. It will be passed to `document.querySelector()
 The `href` property is _optional_:
 
 - If you omit it, `favicon-mode-switcher` will look for `"light"` or `"dark"` substrings in the `href` you specified in the HTML and replace them with the currently active color scheme. For example: if your HTML is `<link rel="shortcut icon" href="./my-favicon.light.ico">`, the `href` will automatically be changed to `./my-favicon.dark.ico` whenever the device is in dark mode. (if the `href` in the HTML doesn't contain either `"light"` or `"dark"`, nothing will happen)
-- Alternatively, you can pass `href` configuration in the form of an object. When the device is in dark mode, the `<link>` elements `href` will be set to the value of `href.dark`.  
+- Alternatively, you can pass `href` configuration in the form of an object. The object keys must match a color scheme and the value is the `href` that should be used when the color scheme from the key is active. For example, with the config `{ dark: './foo.ico' }`, the `<link>` element's `href` will be set to `./foo.ico` while the device is in dark mode.  
   If there is no `href` defined for the color scheme that is currently active, `favicon-mode-switcher` will simply use the one that was initially specified in the HTML.
+
+> 💡 Even though it's technically not an icon, you can also update the web app manifest (`<link rel="manifest">`) of your website using `favicon-mode-switcher!`
 
 #### Stopping the mode switcher
 
