@@ -58,7 +58,7 @@ const iconModeSwitcher = options => {
     (arr, { selector, href }) => {
       const element = document.querySelector(selector)
       if (element && element instanceof HTMLLinkElement) arr.push({ element, href, selector })
-      warn(`[favicon-mode-switcher] Icon not found or not a LinkElement: "${selector}"`)
+      else warn(`[favicon-mode-switcher] Icon not found or not a LinkElement: ${selector}`)
       return arr
     },
     /** @type {IconList} */ ([])
