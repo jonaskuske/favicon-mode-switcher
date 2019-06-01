@@ -1,6 +1,6 @@
 {
   "name": "favicon-mode-switcher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "🕯 Make your favicon adapt to dark and light mode",
   "main": "dist/index.js",
   "unpkg": "dist/index.min.js",
@@ -17,11 +17,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified yet\" && exit 0",
     "build": "npm run babel && npm run minify && npm run version",
-    "babel": "npm run babel:cjs && npm run babel:esm",
-    "babel:cjs": "MODULE=UMD npx babel index.js -o dist/index.js",
-    "babel:esm": "MODULE=ESM npx babel index.js -o dist/index.mjs",
-    "minify": "npm run minify:cjs && npm run minify:esm",
-    "minify:cjs": "npx terser dist/index.js -m -o dist/index.min.js --comments",
+    "babel": "npm run babel:umd && npm run babel:esm",
+    "babel:umd": "npx babel favicon-icon-switcher.js -o dist/index.js",
+    "babel:esm": "cross-env MODULE=ESM npx babel favicon-icon-switcher.js -o dist/index.mjs",
+    "minify": "npm run minify:umd && npm run minify:esm",
+    "minify:umd": "npx terser dist/index.js -m -o dist/index.min.js --comments",
     "minify:esm": "npx terser dist/index.mjs -m -o dist/index.min.mjs --comments --module",
     "version": "npx replace '__VERSION__' $npm_package_version dist/*",
     "prepublishOnly": "npm run build"
@@ -48,6 +48,7 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "copyfiles": "^2.1.0",
+    "cross-env": "^5.2.0",
     "replace": "^1.1.0",
     "terser": "^4.0.0"
   },
