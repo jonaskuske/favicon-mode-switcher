@@ -7,21 +7,21 @@ export type ColorScheme = 'dark' | 'light'
  * Object containing options for an icon that should be updated. Contains a selector string for
  * the HTMLLinkElement to control and an optional Object specifying the hrefs to use.
  *
- * If you don't pass the href Object, the substrings "light"/"dark" in the URI found on the
+ * If you don't pass the href Object, the substrings `"light"`/`"dark"` in the URI found on the
  * HTMLLinkElement will be updated/replaced according to the active color scheme.
  */
 export type IconConfig = {
-  /** CSS selector to get the HTMLLinkElement whose href should be updated on mode change.
+  /** CSS selector to get the **`HTMLLinkElement`** whose href should be updated on mode change.
    *
-   *  Passed to document.querySelector().
+   *  Passed to `document.querySelector()`.
    */
   selector: string
   /**
-   * Specifies the ressource URIs to use. If you omit this property, the substring "light" or
-   * "dark" in the original URI found on the HTMLLinkElement will be updated/replaced every time
-   * the active color scheme changes.
+   * Specifies the resource URIs to use. If you omit this property, the substring `"light"` or
+   * `"dark"` in the original URI found on the HTMLLinkElement will be *updated / replaced*
+   * every time the active color scheme changes.
    *
-   * The key is one of the color schemes, the value is the href used while the scheme is active.
+   * The *key* is one of the color schemes, the *value* is the `href` used when the scheme is active
    *
    * If the currently active scheme matches none of the specified hrefs, the initial href that
    * was found on the HTMLLinkElement is used.
