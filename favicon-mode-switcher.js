@@ -5,22 +5,23 @@
  * Released under the MIT License.
  */
 
-/** @typedef { 'dark' | 'light' } ColorScheme */
-/** @typedef { {selector: string, href?: {[Key in ColorScheme]: string}} } IconOption */
-/** @typedef { Array<IconOption & {element: HTMLLinkElement}> } IconList */
+/** @typedef {import('favicon-mode-switcher').ColorScheme} ColorScheme */
+/** @typedef {import('favicon-mode-switcher').IconOption} IconOption */
+/** @typedef {import('favicon-mode-switcher').Icon} Icon */
+/** @typedef {import('favicon-mode-switcher').FaviconModeSwitcher} FaviconModeSwitcher */
 
 const warn = (/** @type { string } */ message) => {
-  window.console && console.warn(message)
+  typeof console !== 'undefined' && console.warn(message)
 }
 
-/** @param { IconList } icons */
+/** @param { Icon[] } icons */
 const initIcons = icons => {
   icons.forEach(icon => {
     icon.element.setAttribute('data-href', icon.element.href)
   })
 }
 
-/** @param { IconList } icons @param { ColorScheme } scheme */
+/** @param { Icon[] } icons @param { ColorScheme } scheme */
 const updateIcons = (icons, scheme) => {
   icons.forEach(icon => {
     const href = icon.href && (icon.href[scheme] || icon.element.getAttribute('data-href'))
@@ -29,7 +30,7 @@ const updateIcons = (icons, scheme) => {
   })
 }
 
-/** @param { IconList } icons */
+/** @param { Icon[] } icons */
 const resetIcons = icons => {
   icons.forEach(icon => {
     icon.element.href = icon.element.getAttribute('data-href') || ''
@@ -48,20 +49,25 @@ const addColorQuery = (scheme, queryHandler) => {
   return () => query.removeListener(queryHandler)
 }
 
-/** @param { IconOption | IconOption[] } options */
-const iconModeSwitcher = options => {
-  const isBrowser = typeof window !== 'undefined'
-  if (!isBrowser || !options || !window.matchMedia) return
+/**
+ * Takes in icon configuration, sets up listeners for the active color scheme
+ * and updates hrefs of the icons whenever the active scheme changes.
+ * @type {FaviconModeSwitcher}
+ */
+export default function faviconModeSwitcher(options) {
   options = Array.isArray(options) ? options : [options]
+
+  const isBrowser = typeof window !== 'undefined'
+  if (!isBrowser || !options || !window.matchMedia) return () => {}
 
   const icons = options.reduce(
     (arr, { selector, href }) => {
       const element = document.querySelector(selector)
       if (element && element instanceof HTMLLinkElement) arr.push({ element, href, selector })
-      else warn(`[favicon-mode-switcher] Icon not found or not a LinkElement: ${selector}`)
+      else warn(`[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ${selector}`)
       return arr
     },
-    /** @type {IconList} */ ([])
+    /** @type { Icon[] } */ ([]),
   )
 
   initIcons(icons)
@@ -70,5 +76,3 @@ const iconModeSwitcher = options => {
 
   return () => (removeDarkQ(), removeLightQ(), resetIcons(icons))
 }
-
-export default iconModeSwitcher

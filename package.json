@@ -1,6 +1,6 @@
 {
   "name": "favicon-mode-switcher",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "🕯 Make your favicon adapt to dark and light mode",
   "main": "dist/index.js",
   "unpkg": "dist/index.min.js",
@@ -8,6 +8,7 @@
   "files": [
     "dist/*",
     "index.js",
+    "index.d.ts",
     "!dist/.gitkeep"
   ],
   "browserslist": [
@@ -15,11 +16,11 @@
     "ie > 7"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified yet\" && exit 0",
+    "test": "jest --verbose",
     "build": "npm run babel && npm run minify && npm run version",
     "babel": "npm run babel:umd && npm run babel:esm",
-    "babel:umd": "npx babel favicon-icon-switcher.js -o dist/index.js",
-    "babel:esm": "cross-env MODULE=ESM npx babel favicon-icon-switcher.js -o dist/index.mjs",
+    "babel:umd": "npx babel favicon-mode-switcher.js -o dist/index.js",
+    "babel:esm": "cross-env MODULE=ESM npx babel favicon-mode-switcher.js -o dist/index.mjs",
     "minify": "npm run minify:umd && npm run minify:esm",
     "minify:umd": "npx terser dist/index.js -m -o dist/index.min.js --comments",
     "minify:esm": "npx terser dist/index.mjs -m -o dist/index.min.mjs --comments --module",
@@ -47,11 +48,15 @@
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.4",
+    "babel-plugin-add-module-exports": "^1.0.2",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.8.0",
     "lint-staged": "^8.1.7",
     "prettier": "^1.17.1",
     "replace": "^1.1.0",

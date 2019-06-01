@@ -3,6 +3,5 @@
     "strict": true,
     "checkJs": true,
     "target": "es2018"
-  },
-  "exclude": ["node_modules", "dist"]
+  }
 }
