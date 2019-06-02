@@ -1,9 +1,4 @@
-/**
- * @license
- * favicon-mode-switcher __VERSION__
- * (c) 2019 Jonas Kuske
- * Released under the MIT License.
- */
+/** @license MIT favicon-mode-switcher __VERSION__ (c) 2019 Jonas Kuske */
 
 /** @typedef { import('index').ColorScheme } ColorScheme */
 /** @typedef { import('index').Icon } Icon */
@@ -15,29 +10,29 @@ function warn(/** @type { string } */ message) {
 }
 
 function initIcons(/** @type { Icon[] } */ icons) {
-  icons.forEach(icon => {
-    icon.element.setAttribute('data-href', icon.element.href)
-  })
+  icons.forEach(icon => icon.linkElement.setAttribute('data-href', icon.linkElement.href))
 }
 
 function updateIcons(/** @type { Icon[] }*/ icons, /** @type { ColorScheme } */ scheme) {
   icons.forEach(icon => {
-    const href = icon.href && (icon.href[scheme] || icon.element.getAttribute('data-href'))
-    // If href is defined, set href, else toggle "dark" and "light" in href URI
-    icon.element.href = icon.href ? href || '' : icon.element.href.replace(/dark|light/, scheme)
+    const hrefConfig = icon.href
+    // If href config exists set href to specified one, else toggle "dark" / "light" in HTML href
+    if (hrefConfig) {
+      icon.linkElement.href = hrefConfig[scheme] || icon.linkElement.getAttribute('data-href') || ''
+    } else icon.linkElement.href = icon.linkElement.href.replace(/dark|light/, scheme)
   })
 }
 
 function resetIcons(/** @type { Icon[] } */ icons) {
   icons.forEach(icon => {
-    icon.element.href = icon.element.getAttribute('data-href') || ''
-    icon.element.removeAttribute('data-href')
+    icon.linkElement.href = icon.linkElement.getAttribute('data-href') || ''
+    icon.linkElement.removeAttribute('data-href')
   })
 }
 
 /** @param { (query: MediaQueryList | MediaQueryListEvent) => any } queryHandler */
 function addColorQuery(/** @type { ColorScheme } */ scheme, queryHandler) {
-  const query = window.matchMedia(`(prefers-color-scheme: ${scheme})`)
+  const query = matchMedia('(prefers-color-scheme:' + scheme + ')')
   query.addListener(queryHandler)
   queryHandler(query)
   return () => query.removeListener(queryHandler)
@@ -52,9 +47,9 @@ export default function faviconModeSwitcher(options) {
 
   const icons = options.reduce(
     (arr, { element, href }) => {
-      const link = typeof element === 'string' ? document.querySelector(element) : element
-      if (link && link instanceof HTMLLinkElement) arr.push({ element: link, href })
-      else warn(`[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ${element}`)
+      const linkElement = typeof element === 'string' ? document.querySelector(element) : element
+      if (linkElement && linkElement instanceof HTMLLinkElement) arr.push({ linkElement, href })
+      else warn('[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ' + element)
       return arr
     },
     /** @type { Icon[] } */ ([]),

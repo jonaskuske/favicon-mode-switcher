@@ -29,7 +29,7 @@ export type IconConfig = {
   href?: { [Key in ColorScheme]?: string }
 }
 
-export type Icon = Pick<IconConfig, 'href'> & { element: HTMLLinkElement }
+export type Icon = Pick<IconConfig, 'href'> & { linkElement: HTMLLinkElement }
 
 /** Remove the color scheme listeners and reset all icons to their original href. */
 declare function DestroyFunction(): void

@@ -65,7 +65,7 @@ faviconModeSwitcher({
 The module exports a single function as **default export**. If loaded through a CDN, this function will be exposed on **`window.faviconModeSwitcher.default`**. It has the following type signature:
 
 ```ts
-function faviconModeSwitcher(IconConfig | IconConfig[]): DestroyFn
+function faviconModeSwitcher(IconConfig | IconConfig[]): DestroyFunction
 ```
 
 It takes either an configuration object for a single icon to be updated, or an Array containing multiple config objects if you want to keep many icons in sync with the active color scheme. The configuration object looks like this:
