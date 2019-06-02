@@ -68,7 +68,7 @@ The module exports a single function as **default export**. If loaded through a 
 function faviconModeSwitcher(IconConfig | IconConfig[]): DestroyFn
 ```
 
-It takes either an configuration object for a single icon to be updated, or an Array containing multiple config objects if you want to update many icons. The configuration object looks like this:
+It takes either an configuration object for a single icon to be updated, or an Array containing multiple config objects if you want to keep many icons in sync with the active color scheme. The configuration object looks like this:
 
 ```ts
 type IconConfig = {
@@ -105,7 +105,7 @@ destroyIconSwitcher()
 
 ### Browser Support & SSR
 
-Detecting the active color scheme is a relatively new feature and as such has [limited browser support](https://caniuse.com/#feat=prefers-color-scheme). The script itself should run in any browser from at least Internet Explorer 8 upwards without throwing an error, so you can use it for Progressive Enhancement.  
+Detecting the active color scheme is a relatively new feature and as such has [limited browser support](https://caniuse.com/#feat=prefers-color-scheme). The script itself should run in any browser from at least Internet Explorer 9 upwards without throwing an error, so you can use it for Progressive Enhancement.  
 It also doesn't throw if `window` is `undefined`, so you can safely require and execute it in a Node environment for SSR.
 
 Note that the ESModule versions (`.mjs` file extension) only work in browsers with support for `ES2015 / ES6`. Modern bundlers like webpack will automatically import these versions by default. If you're using such a bundler and need legacy browser support, either transpile the module yourself or directly import the CommonJS version at `dist/index.js`.
