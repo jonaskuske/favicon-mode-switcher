@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/favicon-mode-switcher"><img align="center" src="https://img.shields.io/npm/v/favicon-mode-switcher.svg" alt="NPM version"></a>
   <a href="https://travis-ci.org/jonaskuske/favicon-mode-switcher"><img align="center" src="https://travis-ci.org/jonaskuske/favicon-mode-switcher.svg?branch=master" alt="Build status"></a>
-  <a href="https://bundlephobia.com/result?p=favicon-mode-switcher"><img align="center" src="https://img.shields.io/bundlephobia/minzip/favicon-mode-switcher/latest.svg" alt="Bundle size"></a>
+  <a href="https://bundlephobia.com/result?p=favicon-mode-switcher@latest"><img align="center" src="https://img.shields.io/bundlephobia/minzip/favicon-mode-switcher/latest.svg" alt="Bundle size"></a>
   <a href="./LICENSE"><img align="center" src="https://img.shields.io/npm/l/favicon-mode-switcher.svg" alt="License"></a>
 </p>
 
