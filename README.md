@@ -72,7 +72,7 @@ It takes either an configuration object for a single icon to be updated, or an A
 
 ```ts
 type IconConfig = {
-  selector: string
+  element: string | HTMLLinkElement
   href?: {
     dark?: string
     light?: string
@@ -80,7 +80,7 @@ type IconConfig = {
 }
 ```
 
-The `selector` is a CSS selector. It will be passed to `document.querySelector()` and must return a `<link>` element.
+The `element` is either a CSS selector or a `<link>` element. If a selector is passed, it will be passed to `document.querySelector()` and must return a `<link>` element.
 
 The `href` property is _optional_:
 

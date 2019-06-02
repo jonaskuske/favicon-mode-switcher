@@ -53,65 +53,89 @@ afterEach(() => {
   colorScheme._subscriptions = []
 })
 
-it('Replaces "dark"/"light" in original href if no href config is specified', () => {
+it('Allows passing a CSS selector instead of an element', () => {
   colorScheme.set('dark')
 
-  const link = insertLink({ href: 'light.test.ico', id: 'replace' })
-  const destroy = faviconModeSwitcher({ selector: '#replace' })
+  const element = insertLink({ href: 'light.test.ico', id: 'select' })
+  const destroy = faviconModeSwitcher({ element: '#select' })
 
-  expect(link.href).toEqual(expect.stringContaining('dark.test.ico'))
+  expect(element.href).toEqual(expect.stringContaining('dark.test.ico'))
   colorScheme.set('light')
-  expect(link.href).toEqual(expect.stringContaining('light.test.ico'))
+  expect(element.href).toEqual(expect.stringContaining('light.test.ico'))
+
+  destroy()
+})
+
+it('Warns when an invalid `element` prop is passed', () => {
+  const originalConsoleWarn = console.warn
+  console.warn = jest.fn()
+  const warnSpy = jest.spyOn(console, 'warn')
+
+  const destroyFirst = faviconModeSwitcher({ element: 'doesntExist' })
+  expect(warnSpy).toBeCalledTimes(1)
+  destroyFirst()
+
+  // @ts-ignore
+  const destroySecond = faviconModeSwitcher({ element: document.createElement('div') })
+  expect(warnSpy).toBeCalledTimes(2)
+  destroySecond()
+
+  console.warn = originalConsoleWarn
+})
+
+it('Replaces "dark" / "light" in original href if no href config is specified', () => {
+  colorScheme.set('dark')
+
+  const element = insertLink({ href: 'light.test.ico' })
+  const destroy = faviconModeSwitcher({ element })
+
+  expect(element.href).toEqual(expect.stringContaining('dark.test.ico'))
+  colorScheme.set('light')
+  expect(element.href).toEqual(expect.stringContaining('light.test.ico'))
 
   destroy()
 })
 
 it('Sets link.href to matching value from href config', () => {
-  const link = insertLink({ href: 'base.ico', id: 'config' })
-  const destroy = faviconModeSwitcher({
-    selector: '#config',
-    href: { dark: 'dark.ico', light: 'light.ico' },
-  })
+  const element = insertLink({ href: 'base.ico' })
+  const destroy = faviconModeSwitcher({ element, href: { dark: 'dark.ico', light: 'light.ico' } })
 
-  expect(link.href).toEqual(expect.stringContaining('base.ico'))
+  expect(element.href).toEqual(expect.stringContaining('base.ico'))
 
   colorScheme.set('dark')
-  expect(link.href).toEqual(expect.stringContaining('dark.ico'))
+  expect(element.href).toEqual(expect.stringContaining('dark.ico'))
   colorScheme.set('light')
-  expect(link.href).toEqual(expect.stringContaining('light.ico'))
+  expect(element.href).toEqual(expect.stringContaining('light.ico'))
 
   destroy()
 })
 
 it('Falls back to original href if config has no value for current scheme', () => {
-  const link = insertLink({ href: 'original.ico', id: 'fallback' })
-  const destroy = faviconModeSwitcher({ selector: '#fallback', href: { dark: 'dark.ico' } })
+  const element = insertLink({ href: 'original.ico' })
+  const destroy = faviconModeSwitcher({ element, href: { dark: 'dark.ico' } })
 
   colorScheme.set('dark')
-  expect(link.href).toEqual(expect.stringContaining('dark.ico'))
+  expect(element.href).toEqual(expect.stringContaining('dark.ico'))
   colorScheme.set('light')
-  expect(link.href).toEqual(expect.stringContaining('original.ico'))
+  expect(element.href).toEqual(expect.stringContaining('original.ico'))
 
   destroy()
 })
 
 it('Removes listeners and resets icons when destroy() is called', () => {
-  const link = insertLink({ href: 'original.ico', id: 'destroy' })
-  const destroy = faviconModeSwitcher({
-    selector: '#destroy',
-    href: { dark: 'dark.ico', light: 'light.ico' },
-  })
+  const element = insertLink({ href: 'original.ico' })
+  const destroy = faviconModeSwitcher({ element, href: { dark: 'dark.ico', light: 'light.ico' } })
 
-  expect(link.href).toEqual(expect.stringContaining('original.ico'))
+  expect(element.href).toEqual(expect.stringContaining('original.ico'))
 
   colorScheme.set('dark')
-  expect(link.href).toEqual(expect.stringContaining('dark.ico'))
+  expect(element.href).toEqual(expect.stringContaining('dark.ico'))
 
   // href is set back to original
   destroy()
-  expect(link.href).toEqual(expect.stringContaining('original.ico'))
+  expect(element.href).toEqual(expect.stringContaining('original.ico'))
 
   // and listeners are removed, further changes don't update the href
   colorScheme.set('dark')
-  expect(link.href).toEqual(expect.stringContaining('original.ico'))
+  expect(element.href).toEqual(expect.stringContaining('original.ico'))
 })

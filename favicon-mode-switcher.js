@@ -6,9 +6,9 @@
  */
 
 /** @typedef { import('index').ColorScheme } ColorScheme */
+/** @typedef { import('index').Icon } Icon */
 /** @typedef { import('index').IconConfig } IconConfig */
 /** @typedef { import('index').default } FaviconModeSwitcher */
-/** @typedef { IconConfig & {element: HTMLLinkElement} } Icon */
 
 function warn(/** @type { string } */ message) {
   typeof console !== 'undefined' && console.warn(message)
@@ -51,10 +51,10 @@ export default function faviconModeSwitcher(options) {
   options = Array.isArray(options) ? options : [options]
 
   const icons = options.reduce(
-    (arr, { selector, href }) => {
-      const element = document.querySelector(selector)
-      if (element && element instanceof HTMLLinkElement) arr.push({ element, href, selector })
-      else warn(`[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ${selector}`)
+    (arr, { element, href }) => {
+      const link = typeof element === 'string' ? document.querySelector(element) : element
+      if (link && link instanceof HTMLLinkElement) arr.push({ element: link, href })
+      else warn(`[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ${element}`)
       return arr
     },
     /** @type { Icon[] } */ ([]),

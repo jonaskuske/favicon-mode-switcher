@@ -15,7 +15,7 @@ export type IconConfig = {
    *
    *  Passed to `document.querySelector()`.
    */
-  selector: string
+  element: string | HTMLLinkElement
   /**
    * Specifies the resource URIs to use. If you omit this property, the substring `"light"` or
    * `"dark"` in the original URI found on the HTMLLinkElement will be *updated / replaced*
@@ -28,6 +28,8 @@ export type IconConfig = {
    */
   href?: { [Key in ColorScheme]?: string }
 }
+
+export type Icon = Pick<IconConfig, 'href'> & { element: HTMLLinkElement }
 
 /** Remove the color scheme listeners and reset all icons to their original href. */
 declare function DestroyFunction(): void

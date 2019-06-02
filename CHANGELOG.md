@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2019-06-02
+
+### Added
+
+- IconConfig can now take an HTMLLinkElement directly, rather than passing a selector string. Passing selectors is still supported.
+
+### Changed
+
+- BREAKING: IconConfig['selector'] is now called IconConfig['element']
+
+### Added
+
+- Tests added 🏗
+
 ## [0.5.2] - 2019-06-02
 
 ### Added
