@@ -14,7 +14,7 @@ function warn(/** @type { string } */ message) {
   typeof console !== 'undefined' && console.warn(message)
 }
 
-function initIcons(/** @type {Icon[]} */ icons) {
+function initIcons(/** @type { Icon[] } */ icons) {
   icons.forEach(icon => {
     icon.element.setAttribute('data-href', icon.element.href)
   })
