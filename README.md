@@ -55,7 +55,7 @@ const faviconModeSwitcher = window.faviconModeSwitcher.default
 
 // then...
 faviconModeSwitcher({
-  selector: 'link[rel="shortcut icon"]',
+  element: 'link[rel="shortcut icon"]',
   href: { dark: '/icons/favicon-light.ico' },
 })
 ```
@@ -95,7 +95,7 @@ The `href` property is _optional_:
 The main function described above returns a destroy function when called. Run it and the switcher will stop and reset all the icons to their original `href`:
 
 ```js
-const destroyIconSwitcher = faviconModeSwitcher({ selector: 'link[rel="shortcut icon"]' })
+const destroyIconSwitcher = faviconModeSwitcher({ element: 'link[rel="shortcut icon"]' })
 
 // later...
 destroyIconSwitcher()
