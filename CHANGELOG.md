@@ -14,10 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BREAKING: IconConfig['selector'] is now called IconConfig['element']
 
-### Added
-
-- Tests added 🏗
-
 ## [0.5.2] - 2019-06-02
 
 ### Added
