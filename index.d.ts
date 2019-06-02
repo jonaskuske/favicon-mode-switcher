@@ -3,6 +3,8 @@ export as namespace faviconModeSwitcher
 /** Supported color schemes. */
 export type ColorScheme = 'dark' | 'light'
 
+export type HrefConfig = { [Key in ColorScheme]?: string }
+
 /**
  * Object containing options for an icon that should be updated. Contains a selector string for
  * the HTMLLinkElement to control and an optional Object specifying the hrefs to use.
@@ -26,10 +28,13 @@ export type IconConfig = {
    * If the currently active scheme matches none of the specified hrefs, the initial href that
    * was found on the HTMLLinkElement is used.
    */
-  href?: { [Key in ColorScheme]?: string }
+  href?: HrefConfig
 }
 
-export type Icon = Pick<IconConfig, 'href'> & { linkElement: HTMLLinkElement }
+/**
+ * *Keep these props in sync with minifier option --mangle-props in `package.json`*
+ */
+export type Icon = { linkElement: HTMLLinkElement; hrefConfig?: HrefConfig; baseHref: string }
 
 /** Remove the color scheme listeners and reset all icons to their original href. */
 declare function DestroyFunction(): void
@@ -40,4 +45,5 @@ declare function DestroyFunction(): void
  * @param options The configuration, either an object for one icon or an array of config objects.
  */
 declare function FaviconModeSwitcher(options: IconConfig | IconConfig[]): typeof DestroyFunction
+
 export default FaviconModeSwitcher

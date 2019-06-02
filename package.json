@@ -1,6 +1,6 @@
 {
   "name": "favicon-mode-switcher",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "🕯 Make your favicon adapt to dark and light mode",
   "main": "dist/index.min.js",
   "unpkg": "dist/index.umd.min.js",
@@ -24,9 +24,9 @@
     "babel:cjs": "cross-env MODULE=commonjs npx babel favicon-mode-switcher.js -o dist/index.js",
     "babel:esm": "cross-env MODULE=esm npx babel favicon-mode-switcher.js -o dist/index.mjs",
     "minify": "npm run minify:umd && npm run minify:cjs && npm run minify:esm",
-    "minify:umd": "npx terser dist/index.umd.js -o dist/index.umd.min.js -m -c passes=3 --mangle-props regex=linkElement --comments",
-    "minify:cjs": "npx terser dist/index.js -o dist/index.min.js -m -c passes=3 --mangle-props regex=linkElement --comments --module",
-    "minify:esm": "npx terser dist/index.mjs -o dist/index.min.mjs -m -c passes=3 --mangle-props regex=linkElement --comments --module",
+    "minify:umd": "npx terser dist/index.umd.js -o dist/index.umd.min.js -m -c passes=3 --mangle-props regex=\"/linkElement|hrefConfig|baseHref/\" -d DEBUG=false",
+    "minify:cjs": "npx terser dist/index.js -o dist/index.min.js -m -c passes=3 --mangle-props regex=\"/linkElement|hrefConfig|baseHref/\" -d DEBUG=false --module",
+    "minify:esm": "npx terser dist/index.mjs -o dist/index.min.mjs -m -c passes=3 --mangle-props regex=\"/linkElement|hrefConfig|baseHref/\" -d DEBUG=false --module",
     "version": "npx replace '__VERSION__' $npm_package_version dist/*",
     "prepublishOnly": "npm t && npm run build"
   },
