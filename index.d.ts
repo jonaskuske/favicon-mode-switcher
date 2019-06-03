@@ -1,7 +1,13 @@
 export as namespace faviconModeSwitcher
 
-/** Supported color schemes. */
 export type ColorScheme = 'dark' | 'light'
+
+/**
+ * *Keep these props in sync with minifier option --mangle-props in `package.json`*
+ */
+export type Icon = { linkElement: HTMLLinkElement; hrefConfig?: HrefConfig; baseHref: string }
+
+export type Selector = Parameters<Document['querySelector']>[0]
 
 export type HrefConfig = { [Key in ColorScheme]?: string }
 
@@ -13,11 +19,10 @@ export type HrefConfig = { [Key in ColorScheme]?: string }
  * HTMLLinkElement will be updated/replaced according to the active color scheme.
  */
 export type IconConfig = {
-  /** CSS selector to get the **`HTMLLinkElement`** whose href should be updated on mode change.
-   *
-   *  Passed to `document.querySelector()`.
+  /** An `HTMLLinkElement` or a CSS selector that must return an `HTMLLinkElement`
+   *  when passed to `document.querySelector()`.
    */
-  element: string | HTMLLinkElement
+  element: Selector | HTMLLinkElement
   /**
    * Specifies the resource URIs to use. If you omit this property, the substring `"light"` or
    * `"dark"` in the original URI found on the HTMLLinkElement will be *updated / replaced*
@@ -31,10 +36,7 @@ export type IconConfig = {
   href?: HrefConfig
 }
 
-/**
- * *Keep these props in sync with minifier option --mangle-props in `package.json`*
- */
-export type Icon = { linkElement: HTMLLinkElement; hrefConfig?: HrefConfig; baseHref: string }
+export type FaviconTarget = Selector | HTMLLinkElement | IconConfig
 
 /** Remove the color scheme listeners and reset all icons to their original href. */
 declare function DestroyFunction(): void
@@ -42,8 +44,10 @@ declare function DestroyFunction(): void
 /**
  * Takes in icon configuration, sets up listeners for the active color scheme
  * and updates hrefs of the specified icons whenever the active scheme changes.
- * @param options The configuration, either an object for one icon or an array of config objects.
+ * @param options A CSS selector, an HTMLLinkElement or a config object. Can also be an an array.
  */
-declare function FaviconModeSwitcher(options: IconConfig | IconConfig[]): typeof DestroyFunction
+declare function FaviconModeSwitcher(
+  options: FaviconTarget | FaviconTarget[] | NodeListOf<HTMLLinkElement>,
+): typeof DestroyFunction
 
 export default FaviconModeSwitcher

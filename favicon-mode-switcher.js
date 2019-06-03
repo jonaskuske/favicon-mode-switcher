@@ -2,6 +2,7 @@
 
 /** @typedef { import('index').ColorScheme } ColorScheme */
 /** @typedef { import('index').Icon } Icon */
+/** @typedef { import('index').FaviconTarget } FaviconTarget */
 /** @typedef { import('index').default } FaviconModeSwitcher */
 
 const DEBUG = true
@@ -10,18 +11,25 @@ const warn = (/** @type { string } */ msg) => typeof console !== 'undefined' && 
 /** @type { FaviconModeSwitcher } */
 let faviconModeSwitcher = options => {
   let isBrowser = typeof window !== 'undefined'
-  if (!isBrowser || !options || !window.matchMedia) return () => {}
+  if (!isBrowser || !window.matchMedia) return () => {}
 
-  options = Array.isArray(options) ? options : [options]
+  options = (Array.isArray(options) || options instanceof NodeList) ? options : [options]
 
   /** @type { Icon[] } */
   let icons = []
-  options.forEach(opt => {
-    let linkEl = typeof opt.element === 'string' ? document.querySelector(opt.element) : opt.element
-    if (linkEl && linkEl instanceof HTMLLinkElement) {
-      icons.push({ linkElement: linkEl, hrefConfig: opt.href, baseHref: linkEl.href })
+  ;[].forEach.call(options, (/** @type { FaviconTarget } */ target) => {
+    if (typeof target === 'string' || target instanceof HTMLLinkElement) {
+      target = { element: target }
+    }
+
+    // prettier-ignore
+    let linkElement = target && (
+      typeof target.element === 'string' ? document.querySelector(target.element) : target.element
+    )
+    if (linkElement && linkElement instanceof HTMLLinkElement) {
+      icons.push({ linkElement, hrefConfig: target.href, baseHref: linkElement.href })
     } else if (DEBUG) {
-      warn('[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ' + opt.element)
+      warn('[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ' + target)
     }
   })
 

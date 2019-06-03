@@ -1,141 +1,163 @@
-/** @typedef { import('index').ColorScheme } ColorScheme */
-/** @typedef { Parameters<MediaQueryList['addListener']>[0] } QueryListener */
+import { createElement, resetElements, matchMedia, GlobalColorScheme } from './util'
 
-import faviconModeSwitcher from '../favicon-mode-switcher'
+import iconModeSwitcher from '../favicon-mode-switcher'
 
-const insertLink = (props = {}) => {
-  props = Object.assign({ rel: 'shortcut icon', href: '' }, props)
-  return document.body.appendChild(Object.assign(document.createElement('link'), props))
-}
+beforeAll(() => (window.matchMedia = matchMedia))
+afterEach(() => (GlobalColorScheme.reset(), resetElements()))
 
-const colorScheme = {
-  /** @type { ?ColorScheme } */ current: null,
-  /** @type { [NonNullable<QueryListener>, MediaQueryList][] } */ _subscriptions: [],
-  set(/** @type { ColorScheme } */ scheme) {
-    colorScheme.current = scheme
-    colorScheme._subscriptions.forEach(([listener, query]) => {
-      // @ts-ignore
-      query.matches = query.media === scheme
-      listener.call(query, Object.assign(new Event('change'), query))
-    })
-  },
-  subscribe(/** @type { QueryListener } */ listener, /** @type { MediaQueryList } */ query) {
-    if (listener) colorScheme._subscriptions.push([listener, query])
-  },
-  unsubscribe(/** @type { QueryListener } */ listener) {
-    if (!listener) return
-    const index = colorScheme._subscriptions.findIndex(([cb]) => cb === listener)
-    colorScheme._subscriptions.splice(index, 1)
-  },
-}
-
-beforeAll(() => {
-  window.matchMedia = queryString => {
-    /** @type { ColorScheme } */
-    const targetedScheme = /dark/.test(queryString) ? 'dark' : 'light'
-    /** @type { MediaQueryList } */
-    const mediaQuery = {
-      media: targetedScheme, // We abuse this prop to store which color scheme the query observes
-      matches: targetedScheme === colorScheme.current,
-      addListener: cb => colorScheme.subscribe(cb, mediaQuery),
-      removeListener: cb => colorScheme.unsubscribe(cb),
-      // Not implemented
-      onchange: () => {},
-      dispatchEvent: () => false,
-      addEventListener() {},
-      removeEventListener() {},
-    }
-    return mediaQuery
-  }
-})
-afterEach(() => {
-  colorScheme.current = null
-  colorScheme._subscriptions = []
-})
-
-it('Allows passing a CSS selector instead of an element', () => {
-  colorScheme.set('dark')
-
-  const element = insertLink({ href: 'light.test.ico', id: 'select' })
-  const destroy = faviconModeSwitcher({ element: '#select' })
-
-  expect(element.href).toEqual(expect.stringContaining('dark.test.ico'))
-  colorScheme.set('light')
-  expect(element.href).toEqual(expect.stringContaining('light.test.ico'))
-
-  destroy()
-})
-
-it('Warns when an invalid `element` prop is passed', () => {
+test('Warns when an invalid FaviconTarget is passed', () => {
   const originalConsoleWarn = console.warn
   console.warn = jest.fn()
   const warnSpy = jest.spyOn(console, 'warn')
 
-  const destroyFirst = faviconModeSwitcher({ element: 'doesntExist' })
-  expect(warnSpy).toBeCalledTimes(1)
-  destroyFirst()
+  const invalidEl = createElement('meta', { id: 'meta' })
+  const invalidTargets = [null, '#NULL', invalidEl]
+
+  // The invalid targets both when passed "raw" an when passed as element prop in config object
+  const testTargets = [...invalidTargets, ...invalidTargets.map(element => ({ element }))]
 
   // @ts-ignore
-  const destroySecond = faviconModeSwitcher({ element: document.createElement('div') })
-  expect(warnSpy).toBeCalledTimes(2)
-  destroySecond()
+  // Passed separately as first argument
+  const destroyFns = testTargets.map(t => iconModeSwitcher(t))
+  // @ts-ignore
+  // Passed all together as an array
+  destroyFns.push(iconModeSwitcher(testTargets))
+  // @ts-ignore
+  // NodeList with wrong element
+  destroyFns.push(iconModeSwitcher(document.querySelectorAll('#meta')))
 
+  // Should warn 13x: 6 invalid targets + 6 invalid targets in array + 1 invalid target in NodeList
+  expect(warnSpy).toBeCalledTimes(13)
+  for (const destroyFn of destroyFns) destroyFn()
   console.warn = originalConsoleWarn
 })
 
-it('Replaces "dark" / "light" in original href if no href config is specified', () => {
-  colorScheme.set('dark')
+test('Updates href on first run', () => {
+  GlobalColorScheme.current = 'dark'
 
-  const element = insertLink({ href: 'light.test.ico' })
-  const destroy = faviconModeSwitcher({ element })
+  const element = createElement('link', { href: 'INITIAL' })
+  const destroy = iconModeSwitcher({ element, href: { dark: 'SUCCESS' } })
 
-  expect(element.href).toEqual(expect.stringContaining('dark.test.ico'))
-  colorScheme.set('light')
-  expect(element.href).toEqual(expect.stringContaining('light.test.ico'))
-
+  expect(element.href).toEqual(expect.stringContaining('SUCCESS'))
   destroy()
 })
 
-it('Sets link.href to matching value from href config', () => {
-  const element = insertLink({ href: 'base.ico' })
-  const destroy = faviconModeSwitcher({ element, href: { dark: 'dark.ico', light: 'light.ico' } })
+test('Updates href when scheme changes', () => {
+  const element = createElement('link', { href: 'INITIAL' })
+  const destroy = iconModeSwitcher({ element, href: { dark: 'DARK', light: 'LIGHT' } })
 
-  expect(element.href).toEqual(expect.stringContaining('base.ico'))
-
-  colorScheme.set('dark')
-  expect(element.href).toEqual(expect.stringContaining('dark.ico'))
-  colorScheme.set('light')
-  expect(element.href).toEqual(expect.stringContaining('light.ico'))
-
+  expect(element.href).toEqual(expect.stringContaining('INITIAL'))
+  GlobalColorScheme.current = 'dark'
+  expect(element.href).toEqual(expect.stringContaining('DARK'))
+  GlobalColorScheme.current = 'light'
+  expect(element.href).toEqual(expect.stringContaining('LIGHT'))
   destroy()
 })
 
-it('Falls back to original href if config has no value for current scheme', () => {
-  const element = insertLink({ href: 'original.ico' })
-  const destroy = faviconModeSwitcher({ element, href: { dark: 'dark.ico' } })
+test('Uses original href if config has no value for current scheme', () => {
+  const element = createElement('link', { href: 'INITIAL' })
+  const destroy = iconModeSwitcher({ element, href: { dark: 'DARK' } })
 
-  colorScheme.set('dark')
-  expect(element.href).toEqual(expect.stringContaining('dark.ico'))
-  colorScheme.set('light')
-  expect(element.href).toEqual(expect.stringContaining('original.ico'))
-
+  GlobalColorScheme.current = 'dark'
+  expect(element.href).toEqual(expect.stringContaining('DARK'))
+  GlobalColorScheme.current = 'light'
+  expect(element.href).toEqual(expect.stringContaining('INITIAL'))
   destroy()
 })
 
-it('Removes listeners and resets icons when destroy() is called', () => {
-  const element = insertLink({ href: 'original.ico' })
-  const destroy = faviconModeSwitcher({ element, href: { dark: 'dark.ico', light: 'light.ico' } })
+test('Replaces "dark" / "light" in original href if no href config is specified', () => {
+  const element = createElement('link', { href: 'INITIAL-light' })
+  const destroy = iconModeSwitcher({ element })
 
-  expect(element.href).toEqual(expect.stringContaining('original.ico'))
-
-  colorScheme.set('dark')
-  expect(element.href).toEqual(expect.stringContaining('dark.ico'))
-
-  // href is set back to original
+  GlobalColorScheme.current = 'dark'
+  expect(element.href).toEqual(expect.stringContaining('INITIAL-dark'))
   destroy()
-  expect(element.href).toEqual(expect.stringContaining('original.ico'))
+})
 
-  // and listeners are removed, further changes don't update the href
-  colorScheme.set('dark')
-  expect(element.href).toEqual(expect.stringContaining('original.ico'))
+test('Allows passing a CSS selector', () => {
+  const element1 = createElement('link', { href: 'INITIAL-light', id: 'select-1' })
+  const element2 = createElement('link', { href: 'INITIAL-light', id: 'select-2' })
+  const element3 = createElement('link', { href: 'INITIAL-light', id: 'select-3' })
+  const element4 = createElement('link', { href: 'INITIAL-light', id: 'select-4' })
+  const destroy1 = iconModeSwitcher('#select-1') // directly
+  const destroy2 = iconModeSwitcher(['#select-2']) // in array
+  const destroy3 = iconModeSwitcher({ element: '#select-3' }) // as element prop
+  const destroy4 = iconModeSwitcher([{ element: '#select-4' }]) // prop in array
+
+  GlobalColorScheme.current = 'dark'
+  expect(element1.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element2.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element3.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element4.href).toEqual(expect.stringContaining('INITIAL-dark'))
+
+  destroy1()
+  destroy2()
+  destroy3()
+  destroy4()
+})
+
+test('Allows passing an HTMLLinkElement', () => {
+  const element1 = createElement('link', { href: 'INITIAL-light' })
+  const element2 = createElement('link', { href: 'INITIAL-light' })
+  const element3 = createElement('link', { href: 'INITIAL-light' })
+  const element4 = createElement('link', { href: 'INITIAL-light' })
+  const destroy1 = iconModeSwitcher(element1) // directly
+  const destroy2 = iconModeSwitcher([element2]) // in array
+  const destroy3 = iconModeSwitcher({ element: element3 }) // as element prop
+  const destroy4 = iconModeSwitcher([{ element: element4 }]) // prop in array
+
+  GlobalColorScheme.current = 'dark'
+  expect(element1.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element2.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element3.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element4.href).toEqual(expect.stringContaining('INITIAL-dark'))
+
+  destroy1()
+  destroy2()
+  destroy3()
+  destroy4()
+})
+
+test('Allows passing a NodeList', () => {
+  const element = createElement('link', { href: 'INITIAL-light', id: 'NodeList' })
+  const destroy = iconModeSwitcher(document.querySelectorAll('#NodeList'))
+
+  GlobalColorScheme.current = 'dark'
+  expect(element.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  destroy()
+})
+
+test('Allows passing a mix of FaviconTargets', () => {
+  const element1 = createElement('link', { href: 'INITIAL-light' })
+  const element2 = createElement('link', { href: 'INITIAL-light' })
+  const element3 = createElement('link', { href: 'INITIAL-light', id: 'mix-3' })
+  const element4 = createElement('link', { href: 'INITIAL-light', id: 'mix-4' })
+  const destroy = iconModeSwitcher([
+    element1,
+    { element: element2 },
+    '#mix-3',
+    { element: '#mix-4' },
+  ])
+
+  GlobalColorScheme.current = 'dark'
+  expect(element1.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element2.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element3.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  expect(element4.href).toEqual(expect.stringContaining('INITIAL-dark'))
+  destroy()
+})
+
+test('Removes listeners and resets icons when destroy() is called', () => {
+  const element = createElement('link', { href: 'INITIAL' })
+  const destroy = iconModeSwitcher({ element, href: { dark: 'DARK', light: 'LIGHT' } })
+
+  GlobalColorScheme.current = 'dark'
+  expect(element.href).toEqual(expect.stringContaining('DARK'))
+  destroy()
+
+  // The href is set back to original
+  expect(element.href).toEqual(expect.stringContaining('INITIAL'))
+  // And listeners are removed, further changes don't update the href
+  GlobalColorScheme.current = 'dark'
+  expect(element.href).toEqual(expect.stringContaining('INITIAL'))
 })
