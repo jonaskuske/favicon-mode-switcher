@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2019-06-11
+
+### Added
+
+- You can now pass selector strings or `<link>` elements directly, rather than wrapping it in a config object.
+- When using an Array to specify multiple icons to target, the different options (selector, `HTMLLinkElement`, config object) can be mixed-and-matched
+- In addition to Arrays, `favicon-mode-switcher` now also supports `NodeList` so you can use it with `document.querySelectorAll()`
+
+### Changed
+
+- Update tests and docs to match new options
+
 ## [1.0.4] - 2019-06-02
 
 ### Changed
