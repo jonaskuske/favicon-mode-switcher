@@ -125,7 +125,7 @@ For this, `favicon-mode-switcher` will look for the substring "dark" or "light" 
 
 Alternatively, you can specify `href` configuration when using an Object. The object keys must match a color scheme and the value is the `href` that should be used when the color scheme from the key is active.
 <br><br>
-**For example:** with the following config the `href` of `<link id="icon">` will be set to `./logo-teal.ico` while the device is in dark mode, and `foo-navyblue.ico` while the device is in light mode.
+**For example:** with the following config the `href` of `<link id="icon">` will be set to `./logo-teal.ico` while the device is in dark mode, and `logo-navyblue.ico` while the device is in light mode.
 
 ```js
 { element: '#icon', href: { dark: './logo-teal.ico', light: './logo-navyblue.ico' } }
