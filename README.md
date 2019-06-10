@@ -35,10 +35,19 @@ yarn add favicon-mode-switcher
 **CDN ([unpkg](https://unpkg.com)):**
 
 ```html
+<script type="module">
+  import faviconModeSwitcher from 'https://unpkg.com/favicon-mode-switcher/dist/index.min.mjs'
+  // ...
+</script>
+```
+
+or the UMD build:
+
+```html
 <script src="https://unpkg.com/favicon-mode-switcher">
 ```
 
-> ⚠ When using a CDN other than **unpkg**, make sure to specify `/dist/index.umd.min.js` in the URL!
+> 💡 Since all browsers supporting `(prefers-color-scheme)` also support JavaScript modules, usage of the module version is highly recommended. The UMD build is only meant for scenarios where you can't use `<script type="module">`, for example when inserting the script using a WordPress hook.
 
 &nbsp;
 
@@ -54,48 +63,85 @@ const faviconModeSwitcher = require('favicon-mode-switcher')
 const faviconModeSwitcher = window.faviconModeSwitcher.default
 
 // then...
+
+faviconModeSwitcher('link[rel="shortcut icon"]')
+// or
+faviconModeSwitcher(document.querySelector('#favicon'))
+// or
 faviconModeSwitcher({
-  element: 'link[rel="shortcut icon"]',
+  element: document.querySelector('#favicon'),
   href: { dark: '/icons/favicon-light.ico' },
 })
 ```
 
 &nbsp;
 
-The module exports a single function as **default export**. If loaded through a CDN, this function will be exposed on **`window.faviconModeSwitcher.default`**. It has the following type signature:
+The module exports a single function as **default export**. If the UMD build is used, this function will be exposed on **`window.faviconModeSwitcher.default`**. It has the following type signature:
 
 ```ts
-function faviconModeSwitcher(IconConfig | IconConfig[]): DestroyFunction
+function faviconModeSwitcher(FaviconTarget | FaviconTarget[] | NodeListOf<HTMLLinkElement>): DestroyFunction
 ```
 
-It takes either an configuration object for a single icon to be updated, or an Array containing multiple config objects if you want to keep many icons in sync with the active color scheme. The configuration object looks like this:
+It takes either the configuration for a single icon to be updated, or an Array containing multiple configurations if you want to keep many icons in sync with the active color scheme. `NodeList` is supported too, so you can use it with `document.querySelectorAll()`.
+
+> 🕯 Even though it's technically not an icon, you can also update the web app manifest (`<link rel="manifest">`) of your website using `favicon-mode-switcher`!
+
+<br>
+
+The configuration for an icon is either:
+
+- a CSS selector string, which has to return a `<link>` element when passed to `document.querySelector()`
+- a `<link>` element itself
+- an Object, containing one of the above as the `element` property, along with an _optional_ `href` config
 
 ```ts
-type IconConfig = {
-  element: string | HTMLLinkElement
-  href?: {
-    dark?: string
-    light?: string
-  }
-}
+type FaviconTarget =
+  | string
+  | HTMLLinkElement
+  | {
+      element: string | HTMLLinkElement
+      href?: { dark?: string; light?: string }
+    }
 ```
 
-The `element` is either a CSS selector or a `<link>` element. If a selector is passed, it will be passed to `document.querySelector()` and must return a `<link>` element.
+&nbsp;
 
-The `href` property is _optional_:
+### Automatic `href` updates
 
-- If you omit it, `favicon-mode-switcher` will look for `"light"` or `"dark"` substrings in the `href` you specified in the HTML and replace them with the currently active color scheme. For example: if your HTML is `<link rel="shortcut icon" href="./my-favicon.light.ico">`, the `href` will automatically be changed to `./my-favicon.dark.ico` whenever the device is in dark mode. (if the `href` in the HTML doesn't contain either `"light"` or `"dark"`, nothing will happen)
-- Alternatively, you can pass `href` configuration in the form of an object. The object keys must match a color scheme and the value is the `href` that should be used when the color scheme from the key is active. For example, with the config `{ dark: './foo.ico' }`, the `<link>` element's `href` will be set to `./foo.ico` while the device is in dark mode.  
-  If there is no `href` defined for the color scheme that is currently active, `favicon-mode-switcher` will simply use the one that was initially specified in the HTML.
+If you use a selector, Element or Object without `href` property as icon config, the icon's `href` will be updated automatically.
+For this, `favicon-mode-switcher` will look for the substring "dark" or "light" in the `href` you specified in the HTML and replace it with the currently active color scheme.
+<br><br>
+**For example:** here, the `href` will be replaced with `./my-favicon.dark.ico` whenever the device is in dark mode:
 
-> 💡 Even though it's technically not an icon, you can also update the web app manifest (`<link rel="manifest">`) of your website using `favicon-mode-switcher!`
+```html
+<link rel="shortcut icon" href="./my-favicon.light.ico" />
+```
 
-#### Stopping the mode switcher
+(if the `href` in the HTML doesn't contain either `"light"` or `"dark"`, nothing will happen)
+
+&nbsp;
+
+### Specyfing the `href` to use
+
+Alternatively, you can specify `href` configuration when using an Object. The object keys must match a color scheme and the value is the `href` that should be used when the color scheme from the key is active.
+<br><br>
+**For example:** with the following config the `href` of `<link id="icon">` will be set to `./logo-teal.ico` while the device is in dark mode, and `foo-navyblue.ico` while the device is in light mode.
+
+```js
+{ element: '#icon', href: { dark: './logo-teal.ico', light: './logo-navyblue.ico' } }
+```
+
+**However, you only need to specify the `href` for one color scheme:**  
+If there is no `href` defined for the color scheme that is currently active, `favicon-mode-switcher` will simply use the one that was initially specified in the HTML.
+
+&nbsp;
+
+### Stopping the mode switcher
 
 The main function described above returns a destroy function when called. Run it and the switcher will stop and reset all the icons to their original `href`:
 
 ```js
-const destroyIconSwitcher = faviconModeSwitcher({ element: 'link[rel="shortcut icon"]' })
+const destroyIconSwitcher = faviconModeSwitcher(document.querySelectorAll('.favicon'))
 
 // later...
 destroyIconSwitcher()
