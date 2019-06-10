@@ -26,7 +26,7 @@ let faviconModeSwitcher = options => {
     let linkElement = target && (
       typeof target.element === 'string' ? document.querySelector(target.element) : target.element
     )
-    if (linkElement && linkElement instanceof HTMLLinkElement) {
+    if (linkElement instanceof HTMLLinkElement) {
       icons.push({ linkElement, hrefConfig: target.href, baseHref: linkElement.href })
     } else if (DEBUG) {
       warn('[favicon-mode-switcher] Icon not found or not an HTMLLinkElement: ' + target)
