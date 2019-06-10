@@ -1,6 +1,6 @@
 {
   "name": "favicon-mode-switcher",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "🕯 Make your favicon adapt to dark and light mode",
   "main": "dist/index.min.js",
   "unpkg": "dist/index.umd.min.js",
