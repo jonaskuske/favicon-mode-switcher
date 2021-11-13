@@ -1,4 +1,4 @@
-/** @license MIT favicon-mode-switcher __VERSION__ (c) 2019 Jonas Kuske */
+/** @license MIT favicon-mode-switcher __VERSION__ (c) 2021 Jonas Kuske */
 
 /** @typedef { import('index').ColorScheme } ColorScheme */
 /** @typedef { import('index').Icon } Icon */

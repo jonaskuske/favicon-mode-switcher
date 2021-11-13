@@ -166,4 +166,4 @@ Note that the ESModule versions (`.mjs` file extension) only work in browsers wi
 
 &nbsp;
 
-© 2019, Jonas Kuske
+© 2021, Jonas Kuske
