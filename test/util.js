@@ -4,10 +4,12 @@
 /** @type { HTMLElement[] } */
 let insertedElements = []
 
-/** @template { keyof HTMLElementTagNameMap } TagName */
-/** @param { TagName } tagName */
-/** @param { Partial<HTMLElementTagNameMap[TagName]> } props */
-/** @returns { HTMLElementTagNameMap[TagName] } */
+/**
+ * @template { keyof HTMLElementTagNameMap } TagName
+ * @param { TagName } tagName
+ * @param { Partial<HTMLElementTagNameMap[TagName]> } props
+ * @returns { HTMLElementTagNameMap[TagName] }
+ */
 export const createElement = (tagName, props = {}) => {
   const element = document.body.appendChild(Object.assign(document.createElement(tagName), props))
   insertedElements.push(element)
@@ -28,7 +30,7 @@ export const resetElements = () => {
  * Return which scheme the query string in the form of (prefers-color-scheme: scheme) is targeting.
  * @param { string } media
  */
-const getColorSchemeFromMedia = media => (/dark/.test(media) ? 'dark' : 'light')
+const getColorSchemeFromMedia = (media) => (/dark/.test(media) ? 'dark' : 'light')
 
 /**
  * Keep track of the fake color scheme that is currently active.
@@ -70,20 +72,20 @@ export const GlobalColorScheme = {
     GlobalColorScheme.subscriptions.splice(index, 1)
   },
   /** @type { [NonNullable<QueryListener>, MediaQueryList][] } */ subscriptions: [],
-  /** @type { ?ColorScheme } @readonly */ _current: null,
+  /** @type { ?ColorScheme } @private */ _current: null,
 }
 
 /**
  * Creates a new MediaQuery.
  * @type { Window['matchMedia'] }
  */
-export const matchMedia = media => {
+export const matchMedia = (media) => {
   /** @type { MediaQueryList } */
   const mediaQuery = {
     media,
     matches: getColorSchemeFromMedia(media) === GlobalColorScheme.current,
-    addListener: listener => GlobalColorScheme.subscribe(listener, mediaQuery),
-    removeListener: listener => GlobalColorScheme.unsubscribe(listener),
+    addListener: (listener) => GlobalColorScheme.subscribe(listener, mediaQuery),
+    removeListener: (listener) => GlobalColorScheme.unsubscribe(listener),
 
     // Not implemented
     onchange: () => {},

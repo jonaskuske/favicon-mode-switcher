@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { createElement, resetElements, matchMedia, GlobalColorScheme } from './util'
 
 import iconModeSwitcher from '../favicon-mode-switcher'
@@ -14,11 +16,11 @@ test('Warns when an invalid FaviconTarget is passed', () => {
   const invalidTargets = [null, '#NULL', invalidEl]
 
   // The invalid targets both when passed "raw" an when passed as element prop in config object
-  const testTargets = [...invalidTargets, ...invalidTargets.map(element => ({ element }))]
+  const testTargets = [...invalidTargets, ...invalidTargets.map((element) => ({ element }))]
 
   // @ts-ignore
   // Passed separately as first argument
-  const destroyFns = testTargets.map(t => iconModeSwitcher(t))
+  const destroyFns = testTargets.map((t) => iconModeSwitcher(t))
   // @ts-ignore
   // Passed all together as an array
   destroyFns.push(iconModeSwitcher(testTargets))

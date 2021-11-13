@@ -1,7 +1,3 @@
-/**
- * @jest-environment node
- */
-
 it('Does not throw on require() in Node environment', () => {
   const fn = () => {
     require('../favicon-mode-switcher')

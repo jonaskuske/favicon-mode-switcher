@@ -9,11 +9,11 @@ const DEBUG = true
 const warn = (/** @type { string } */ msg) => typeof console !== 'undefined' && console.warn(msg)
 
 /** @type { FaviconModeSwitcher } */
-let faviconModeSwitcher = options => {
+let faviconModeSwitcher = (options) => {
   let isBrowser = typeof window !== 'undefined'
   if (!isBrowser || !window.matchMedia) return () => {}
 
-  options = (Array.isArray(options) || options instanceof NodeList) ? options : [options]
+  options = Array.isArray(options) || options instanceof NodeList ? options : [options]
 
   /** @type { Icon[] } */
   let icons = []
@@ -45,13 +45,13 @@ let faviconModeSwitcher = options => {
     ))
 
     mediaQuery.addListener(updateFn)
-    return (updateFn(), () => mediaQuery.removeListener(updateFn))
+    return updateFn(), () => mediaQuery.removeListener(updateFn)
   }
 
   let undoDarkQ = addColorQuery('dark')
   let undoLightQ = addColorQuery('light')
 
-  return () => ((undoDarkQ(), undoLightQ(), icons.forEach(i => (i.linkElement.href = i.baseHref))))
+  return () => (undoDarkQ(), undoLightQ(), icons.forEach((i) => (i.linkElement.href = i.baseHref)))
 }
 
 export default faviconModeSwitcher
