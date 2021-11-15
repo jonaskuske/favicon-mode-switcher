@@ -7,7 +7,13 @@ it('Does not throw on require() in Node environment', () => {
 })
 
 it('Returns destroy function', () => {
-  const destroy = require('../favicon-mode-switcher')
+  /** @type {any} */
+  const _faviconModeSwitcher = require('../favicon-mode-switcher')
+
+  /** @type {import('../favicon-mode-switcher').FaviconModeSwitcher} */
+  const faviconModeSwitcher = _faviconModeSwitcher
+
+  const destroy = faviconModeSwitcher([])
 
   expect(typeof destroy).toBe('function')
   expect(destroy).not.toThrow()
