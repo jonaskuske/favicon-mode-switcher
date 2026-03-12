@@ -62,7 +62,7 @@
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.3.1",
+    "jest": "^30.3.0",
     "lint-staged": "^13.2.1",
     "prettier": "^2.4.1",
     "replace": "^1.1.0",
